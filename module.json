@@ -1,0 +1,38 @@
+{
+  "name": "EnhancedMovement",
+  "title": "Enhanced Movement",
+  "description": "A module that sets out to track player's movement during combat.",
+  "authors": [{"name":"Will Saunders","email":"willsaunders1014@gmail.com" }],
+  "version": "0.0.2",
+  "minimumCoreVersion": "0.6.4",
+  "compatibleCoreVersion":"0.6.6",
+  "scripts":[
+    
+  ],
+  "styles":[
+     "css/style.css"
+  ],
+  "esmodules": [
+    "enhanced-movement.js"
+  ],
+  "dependencies":[
+    {
+      "name":"lib-find-the-path",
+      "manifest":"https://raw.githubusercontent.com/dwonderley/lib-find-the-path/master/module.json"
+    },
+    {
+      "name":"TerrainLayer"
+    }
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "changelog":"https://raw.githubusercontent.com/wsaunders1014/EnhancedMovement/master/README.md",
+  "url":"https://github.com/wsaunders1014/EnhancedMovement",
+  "manifest":"https://raw.githubusercontent.com/wsaunders1014/EnhancedMovement/master/module.json",
+  "download":"https://github.com/wsaunders1014/EnhancedMovement/releases/download/0.0.2/EnhancedMovement.zip"
+}

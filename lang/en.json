@@ -1,0 +1,4 @@
+{
+	"EnhancedMovement.speedLimit-s":"Restrict token movement to its speed?",
+	"EnhancedMovement.speedLimit-l":"During combat, prevent token from exceeding its speed."
+}
