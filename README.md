@@ -1,14 +1,4 @@
-v0.0.3 -
-Forked by Michael Burrowes for compatibility with 0.7.7
-Seem to have fixed compatibility
-Additionally added an "undo" button next to the dash button
-Future plans: Stop notification spam?
-
-
-v0.0.2 -
-Some small css tweaks to the tracker
-Fixed some major issues with Hex maps
-Honestly don't even remember, but a lot of little bug fixes.
+# Enhanced Movement
 
 <p>This module aims to track and differentiate the different types of movement a token has during combat in DnD 5e as well as implement automatic Difficult Terrain tracking through the dependent Terrain Layer module.</p>
 When combat starts, all token's movement speeds are reset to their default max. A user can see the different movement modes a token has in the Movement tracker. For instance an Adult Blue Dragon has a walk speed of 40, burrow speed of 30, and a flying speed of 80. This module currently only supports the PHB RAW interpretation of tracking multiple movement types. 
@@ -16,7 +6,6 @@ When combat starts, all token's movement speeds are reset to their default max. 
 >If you have more than one speed, such as your walking speed and a flying speed, you can switch back and forth between your speeds during your move. Whenever you switch, subtract the distance you've already moved from the new speed. The result determines how much farther you can move. If the result is 0 or less, you can't use the new speed during the current move.
 >
 >For example, if you have a speed of 30 and a flying speed of 60 because a wizard cast the fly spell on you, you could fly 20 feet, then walk 10 feet, and then leap into the air to fly 30 feet more.
-
 
 When combat is started, each token's current movement speed is displayed ON their token as well for ease. Players can only see movement of token's they own, but the GM can see all tokens.
 
@@ -29,20 +18,57 @@ Tokens must have speed to move while combat is active. This includes tokens not 
 When combat ends, all token speeds are reset. 
 
 I've started to integrate Difficult Terrain as well. Use the Terrain layer to paint grid points. Currently the only DT type is 'ground' so flying creatures ignore Difficult Terrain by default.
+
 Tokens also have a toggle function to set whether it ignores difficult terrain all together if you want to change it with a macro simply do..
 ```javascript
 tokenReference.EnhancedMovement.toggleIgnoreDifficultTerrain()
 ```
 
+## Installation
+
+It's always easiest to install modules from the in game add-on browser.
+
+To install this module manually:
+1.  Inside the Foundry "Configuration and Setup" screen, click "Add-on Modules"
+2.  Click "Install Module"
+3.  In the "Manifest URL" field, paste the following url:
+`https://raw.githubusercontent.com/wsaunders1014/EnhancedMovement/main/src/module.json`
+4.  Click 'Install' and wait for installation to complete
+5.  Don't forget to enable the module in game using the "Manage Module" button
+
+### libWrapper
+
+This module uses the [libWrapper](https://github.com/ruipin/fvtt-lib-wrapper) library for wrapping core methods. It is a hard dependency and it is recommended for the best experience and compatibility with other modules.
+
 Some notes:
+
 Speeds SHOULD be persistent between sessions if you end a game during a combat encounter. As this is an ALPHA, though there may be edge cases I've missed.
 GM can move tokens without consuming movement speed by holding ALT while dragging or moving tokens with keys.
 I have not tested this with multiple combat encounters and I'm pretty certain it won't work.
 
-As this is an alpha I am very open to feedback on what could be improved or if there are bugs you find please create an issue!
-
+**As this is an alpha I am very open to feedback on what could be improved or if there are bugs you find please create an issue!**
 
 <p><img src="https://i.imgur.com/u08vtVw.jpg" alt="Gm and Player view" width="868" height="453" /></p>
+
 <p><img src="https://i.imgur.com/UJsmTk5.jpg" alt="" width="710" height="347" /></p>
+
 <p><img src="https://i.imgur.com/oo69MgO.jpg" alt="" width="683" height="315" /></p>
+
 <p><img src="https://i.imgur.com/er5kCl1.jpg" alt="" width="303" height="198" /></p>
+
+
+## Issues
+
+Any issues, bugs, or feature requests are always welcome to be reported directly to the [Issue Tracker](https://github.com/wsaunders1014/EnhancedMovement/issues ), or using the [Bug Reporter Module](https://foundryvtt.com/packages/bug-reporter/).
+
+## Acknowledgements
+
+Bootstrapped with League of Extraordinary FoundryVTT Developers  [foundry-vtt-types](https://github.com/League-of-Foundry-Developers/foundry-vtt-types).
+
+Mad props to the 'League of Extraordinary FoundryVTT Developers' community which helped me figure out a lot.
+
+## Credit
+
+Thanks to anyone who helps me with this code! I appreciate the user community's feedback on this project!
+
+- [showdooricons](https://github.com/wsaunders1014/EnhancedMovement) ty to [wsaunders1014](https://github.com/wsaunders1014)

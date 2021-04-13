@@ -1,2 +1,2 @@
-docs/
-*.zip
+node_modules
+/dist
