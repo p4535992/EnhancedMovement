@@ -40,7 +40,7 @@
     }
   ],
   "scripts": [
-    "./module/libs/shim.js"
+
   ],
   "styles":[
      "css/style.css"
