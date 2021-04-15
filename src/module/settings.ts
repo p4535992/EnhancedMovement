@@ -1,3 +1,4 @@
+import { i18n } from './../enhanced-movement';
 export const MODULE_NAME = 'EnhancedMovement';
 
 /**
@@ -50,8 +51,8 @@ export const registerSettings = function () {
     // })
 
     game.settings.register(MODULE_NAME, 'speedLimit', {
-      name: "EnhancedMovement.speedLimit-s",
-      hint: "EnhancedMovement.speedLimit-l",
+      name: i18n(MODULE_NAME+".speedLimit-s"),
+      hint: i18n(MODULE_NAME+".speedLimit-l"),
       scope: "world",
       config: true,
       default: true,

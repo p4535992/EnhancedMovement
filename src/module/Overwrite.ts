@@ -1,5 +1,6 @@
 import { error } from './../enhanced-movement';
-import SpeedHUD from '../classes/SpeedHUD.js';
+import { SpeedHUD } from './classes/SpeedHUD';
+import { getCanvas } from './settings';
 
 export class Overwrite {
 
@@ -70,7 +71,7 @@ export class Overwrite {
      // Gate font size based on grid size
 
     const speed = Math.max(this.EnhancedMovement.remainingSpeed,0);
-      const gs = canvas.dimensions.size;
+      const gs = getCanvas().dimensions.size;
       let h = 24;
       if ( gs >= 200 ) h = 36;
       else if ( gs <= 70 ) h = 20;
@@ -78,7 +79,7 @@ export class Overwrite {
       // Create the nameplate text
       //const name = new PIXI.Text(this.maxSpeed, CONFIG.canvasTextStyle.clone());
 
-      const name = new PIXI.Text(speed, {
+      const name = new PIXI.Text(String(speed), {
         fontFamily: "Signika",
         fontSize: 36,
         fill: "#FFFFFF",
@@ -92,6 +93,7 @@ export class Overwrite {
         align: "center",
         wordWrap: false
       });
+
       const textHeight = 48; // This is a magic number which PIXI renders at font size 36
 
       // Anchor to the top-right of the nameplate
@@ -220,7 +222,7 @@ export class Overwrite {
 		// 	 // Gate font size based on grid size
 
 		// 	const speed = Math.max(this.EnhancedMovement.remainingSpeed,0);
-		//     const gs = canvas.dimensions.size;
+		//     const gs = getCanvas().dimensions.size;
 		//     let h = 24;
 		//     if ( gs >= 200 ) h = 36;
 		//     else if ( gs <= 70 ) h = 20;

@@ -1,5 +1,5 @@
-import { log, warn } from "../mobile";
-import { Controls } from "./Controls";
+import { log, warn } from "../enhanced-movement";
+import EnhancedMovement from "./classes/EnhancedMovement";
 import { Overwrite } from "./Overwrite";
 import { getCanvas, MODULE_NAME } from "./settings";
 
@@ -30,11 +30,11 @@ export let readyHooks = async () => {
     getCanvas().tokens.placeables.forEach((token)=>{
       if(typeof token.actor != 'undefined'){
         //token.movementGrid = new MovementGrid(token);
-        token.EnhancedMovement = new EnhancedMovement(token);
+        token[MODULE_NAME] = new EnhancedMovement(token);
       }
     })
 
-    getCanvas().hud.speedHUD.updateHUD()
+    getCanvas().hud['speedHUD'].updateHUD()
     //Allows GM to override movement restrictions.
      if (game.user.isGM){
       $(window).on('keydown',(e)=>{
@@ -60,22 +60,22 @@ export let readyHooks = async () => {
     }
     $('body').on('click','#dash-btn',function(e){
       if($(this).hasClass('active')){
-        if(getCanvas().tokens.controlled[0].EnhancedMovement.totalSpeed < getCanvas().tokens.controlled[0].EnhancedMovement.maxSpeed){
+        if(getCanvas().tokens.controlled[0][MODULE_NAME].totalSpeed < getCanvas().tokens.controlled[0][MODULE_NAME].maxSpeed){
           $(this).removeClass('active')
-          getCanvas().tokens.controlled[0].EnhancedMovement.unDash();
+          getCanvas().tokens.controlled[0][MODULE_NAME].unDash();
         }
 
       }else{
         $(this).addClass('active');
-        getCanvas().tokens.controlled[0].EnhancedMovement.dash();
+        getCanvas().tokens.controlled[0][MODULE_NAME].dash();
       }
     })
     $('body').on('click','#undo-btn', function(e) {
-      getCanvas().tokens.controlled[0].EnhancedMovement.undo();
+      getCanvas().tokens.controlled[0][MODULE_NAME].undo();
     })
     //Create SPEEDUI
     //game.user.speedHUD = new SpeedHUD().render(true);
-    getCanvas().hud.speedHUD.render(true);
+    getCanvas().hud['speedHUD'].render(true);
   });
 
   //COMBAT HOOKS
@@ -107,35 +107,35 @@ export let readyHooks = async () => {
 
           })
           nonCombatTokens.forEach((token)=>{
-            token.EnhancedMovement.reset();
+            token[MODULE_NAME].reset();
           })
 
         }
         game.combat.combatants.forEach((c)=>{
           if(c.tokenId != game.combat.combatant.tokenId)
-            getCanvas().tokens.get(c.tokenId).EnhancedMovement.endTurn();
+            getCanvas().tokens.get(c.tokenId)[MODULE_NAME].endTurn();
         })
 
-        token.EnhancedMovement.reset();
+        token[MODULE_NAME].reset();
         // token.setFlag(MODULE_NAME,'remainingSpeed',token.maxSpeed).then(()=>{
         // 	//if(token._controlled) token.movementGrid.highlightGrid();
         // });
-        if(token.id == getCanvas().hud.speedHUD.token.id){
-          getCanvas().hud.speedHUD.updateTracker()
+        if(token.id == getCanvas().hud['speedHUD'].token.id){
+          getCanvas().hud['speedHUD'].updateTracker()
         }else{
-          getCanvas().hud.speedHUD.updateTracker();
+          getCanvas().hud['speedHUD'].updateTracker();
         }
       }
 
       if(data.round == 1 && combat.previous.round !== 2 && game.user.isGM){
         //Combat Started
         if(token !== null){
-          getCanvas().hud.speedHUD.token = token;
-          getCanvas().hud.speedHUD.updateHUD();
-          getCanvas().hud.speedHUD.updateTracker()
+          getCanvas().hud['speedHUD'].token = token;
+          getCanvas().hud['speedHUD'].updateHUD();
+          getCanvas().hud['speedHUD'].updateTracker()
         }
         getCanvas().tokens.placeables.forEach((token)=>{
-          token.EnhancedMovement.reset()
+          token[MODULE_NAME].reset()
           token.refresh();
         });
 
@@ -147,24 +147,24 @@ export let readyHooks = async () => {
     if(game.user.isGM){
       // combat.combatants.map((combatant)=>{
       // 	let token = getCanvas().tokens.get(combatant.tokenId);
-      // 	token.EnhancedMovement.reset();
-      // 	getCanvas().hud.speedHUD.updateTracker()
+      // 	token[MODULE_NAME].reset();
+      // 	getCanvas().hud['speedHUD'].updateTracker()
 
 
       // });
       getCanvas().tokens.placeables.forEach((token)=>{
-        token.EnhancedMovement.reset();
+        token[MODULE_NAME].reset();
         token.refresh();
-        if(getCanvas().hud.speedHUD.token != false)
-          getCanvas().hud.speedHUD.updateTracker()
+        if(getCanvas().hud['speedHUD'].token != false)
+          getCanvas().hud['speedHUD'].updateTracker()
         //token.movementGrid.clear();
       })
     }
   });
 
   Hooks.on('createCombatant',(combat,combatant,data,)=>{
-    if(getCanvas().hud.speedHUD.token.id == combatant.tokenId){
-      getCanvas().hud.speedHUD.updateTracker();
+    if(getCanvas().hud['speedHUD'].token.id == combatant.tokenId){
+      getCanvas().hud['speedHUD'].updateTracker();
     }
   });
 
@@ -175,21 +175,33 @@ export let readyHooks = async () => {
     cToken = (controlled) ? token:null;
 
     if(controlled){
-      getCanvas().hud.speedHUD.token = token;
-      getCanvas().hud.speedHUD.updateHUD();
+      getCanvas().hud['speedHUD'].token = token;
+      getCanvas().hud['speedHUD'].updateHUD();
 
     }else{
-      getCanvas().hud.speedHUD.token = false;
+      getCanvas().hud['speedHUD'].token = false;
 
       setTimeout(()=>{
 
-        if(getCanvas().hud.speedHUD.token){
-          getCanvas().hud.speedHUD.updateHUD();
+        if(getCanvas().hud['speedHUD'].token){
+          getCanvas().hud['speedHUD'].updateHUD();
         }else{
-          getCanvas().hud.speedHUD.close();
+          getCanvas().hud['speedHUD'].close();
         }
       },200)
     }
+
+    // GET FROM SPEED HUD CLASS
+
+    Hooks.on('renderPlayerList',()=>{
+      if(typeof getCanvas().hud['speedHUD'] != 'undefined'){
+        getCanvas().hud['speedHUD'].element.css(
+          {
+            bottom:window.innerHeight - $('#players').offset().top+15
+          }
+        )
+      }
+    })
 
   });
 
@@ -217,21 +229,24 @@ export let readyHooks = async () => {
        path.forEach((point)=>{
            let terrainInfo = checkForTerrain(point[0],point[1])
            if(terrainInfo){
-             if(terrainInfo.type == 'ground' && token.EnhancedMovement.movementMode == 'walk' && !token.EnhancedMovement.ignoreDifficultTerrain)
+             if(terrainInfo.type == 'ground' && token[MODULE_NAME].movementMode == 'walk' && !token[MODULE_NAME].ignoreDifficultTerrain)
                distance += (terrainInfo.multiple * getCanvas().scene.data.gridDistance) - getCanvas().scene.data.gridDistance;
 
            }
        })
 
-        nDiagonal += nd;
-        token.data.flags.EnhancedMovement.nDiagonal = nDiagonal;
-        token.setFlag(MODULE_NAME,'nDiagonal',nDiagonal);
-
+      nDiagonal += nd;
+      //@ts-ignore
+      token.data.flags[MODULE_NAME].nDiagonal = nDiagonal;
+      token.setFlag(MODULE_NAME,'nDiagonal',nDiagonal);
+      //@ts-ignore
       if(getCanvas().grid.diagonalRule == '555'){
         let d = Math.floor(ns + nd) * getCanvas().scene.data.gridDistance;
         distance += d + ((getCanvas().scene.data.gridType > 1) ? getCanvas().scene.data.gridDistance:0);
 
-      }else if(getCanvas().grid.diagonalRule =='5105'){
+      }
+      //@ts-ignore
+      else if(getCanvas().grid.diagonalRule =='5105'){
 
           let nd10 = Math.floor(nDiagonal / 2) - Math.floor((nDiagonal - nd) / 2);
           let spaces = (nd10 * 2) + (nd - nd10) + ns;
@@ -241,7 +256,7 @@ export let readyHooks = async () => {
       if(distance < getCanvas().scene.data.gridDistance) distance = getCanvas().scene.data.gridDistance;
       if(gmAltPress) distance = 0;
 
-      let speed = token.EnhancedMovement.remainingSpeed;
+      let speed = token[MODULE_NAME].remainingSpeed;
 
       let modSpeed = speed - distance;
       if(modSpeed < 0 && !gmAltPress){
@@ -250,12 +265,12 @@ export let readyHooks = async () => {
         ui.notifications.warn("Creature has exceeded their movement speed this turn.", {permanent: false});
         return false;
       }else{
-        token.EnhancedMovement.totalSpeed += distance;
-        token.setFlag(MODULE_NAME,'totalSpeed', token.EnhancedMovement.totalSpeed)
-        token.EnhancedMovement.remainingSpeed = (modSpeed < 0) ? 0:modSpeed;
-        token.EnhancedMovement.updateMovementSpeedFlag();
+        token[MODULE_NAME].totalSpeed += distance;
+        token.setFlag(MODULE_NAME,'totalSpeed', token[MODULE_NAME].totalSpeed)
+        token[MODULE_NAME].remainingSpeed = (modSpeed < 0) ? 0:modSpeed;
+        token[MODULE_NAME].updateMovementSpeedFlag();
 
-        getCanvas().hud.speedHUD.updateHUD()
+        getCanvas().hud['speedHUD'].updateHUD()
       }
 
       if( game.combat.started && game.combat.combatant.tokenId == tokenData._id){
@@ -271,13 +286,13 @@ export let readyHooks = async () => {
     let token = getCanvas().tokens.get(tokenData._id)
     if(updates.hasOwnProperty('flags')){
       if(updates.flags.hasOwnProperty(MODULE_NAME)){
-        if(updates.flags.EnhancedMovement.hasOwnProperty('remainingSpeed')){
-          token.EnhancedMovement.remainingSpeed = updates.flags.EnhancedMovement.remainingSpeed;
-          //token.EnhancedMovement.updateMovementSpeedFlag();
+        if(updates.flags[MODULE_NAME].hasOwnProperty('remainingSpeed')){
+          token[MODULE_NAME].remainingSpeed = updates.flags[MODULE_NAME].remainingSpeed;
+          //token[MODULE_NAME].updateMovementSpeedFlag();
           token.refresh();
 
-          if(getCanvas().hud.speedHUD.token.id == token.id){
-            getCanvas().hud.speedHUD.updateHUD();
+          if(getCanvas().hud['speedHUD'].token.id == token.id){
+            getCanvas().hud['speedHUD'].updateHUD();
           }
         }
       }
@@ -290,7 +305,7 @@ export let readyHooks = async () => {
       if(interval == null) {
         interval = setInterval(()=>{
 
-          if(token._movement == null){
+          if(token['_movement'] == null){
             clearInterval(interval);
             interval = null;
             Hooks.call('moveToken',token)
@@ -313,9 +328,9 @@ export let readyHooks = async () => {
   Hooks.on('createToken',(scene,tokenData)=>{
     if(game.user.isGM){
       let token = getCanvas().tokens.get(tokenData._id);
-      token.EnhancedMovement = new EnhancedMovement(token);
-      token.EnhancedMovement.updateMovementSpeedFlag();
-      //token.setFlag(MODULE_NAME,'remainingSpeed',token.EnhancedMovement.maxSpeed);
+      token[MODULE_NAME] = new EnhancedMovement(token);
+      token[MODULE_NAME].updateMovementSpeedFlag();
+      //token.setFlag(MODULE_NAME,'remainingSpeed',token[MODULE_NAME].maxSpeed);
     }
   });
 
@@ -326,10 +341,10 @@ export let readyHooks = async () => {
       let tokens = getTokensFromActor(actor);
       if(tokens.length > 0){
         tokens.forEach((token)=>{
-          let diff = token.EnhancedMovement.remainingSpeed - token.EnhancedMovement.maxSpeed;
+          let diff = token[MODULE_NAME].remainingSpeed - token[MODULE_NAME].maxSpeed;
 
-          token.EnhancedMovement.remainingSpeed = newSpeed - diff;
-          getCanvas().hud.speedHUD.updateHUD()
+          token[MODULE_NAME].remainingSpeed = newSpeed - diff;
+          getCanvas().hud['speedHUD'].updateHUD()
           token.unsetFlag(MODULE_NAME,'remainingSpeed').then(()=>{
             token.setFlag(MODULE_NAME,'remainingSpeed', newSpeed-diff);
           })
@@ -346,9 +361,9 @@ export let readyHooks = async () => {
       let tokens = getTokensFromActor(actor);
       if(tokens.length > 0){
         tokens.forEach((token)=>{
-          token.EnhancedMovement.getMovementTypes();
-          if(getCanvas().hud.speedHUD.token.id == token.id)
-            getCanvas().hud.speedHUD.updateHUD()
+          token[MODULE_NAME].getMovementTypes();
+          if(getCanvas().hud['speedHUD'].token.id == token.id)
+            getCanvas().hud['speedHUD'].updateHUD()
         })
       }
     }
@@ -356,7 +371,7 @@ export let readyHooks = async () => {
 
   Hooks.on('renderTokenHUD',(tokenHUD,element,data)=>{
     let token = getCanvas().tokens.get(data._id)
-    let isDashing = (token.EnhancedMovement.isDashing) ? 'active':''
+    let isDashing = (token[MODULE_NAME].isDashing) ? 'active':''
     element.find('.elevation').append(`<div id="dash-btn" class="control-icon fas fa-running ${isDashing}"></div>`)
     element.find('.elevation').append(`<div id="undo-btn" class="control-icon fas fa-undo"></div>`)
   });
@@ -393,9 +408,9 @@ function getTokensFromActor(actor){
 
 function checkForTerrain(x,y){
 
-  if(typeof getCanvas().terrain.costGrid[x] == 'undefined') return false
-  if(typeof getCanvas().terrain.costGrid[x][y] == 'undefined') return false
-  return getCanvas().terrain.costGrid[x][y];
+  if(typeof getCanvas()['terrain'].costGrid[x] == 'undefined') return false
+  if(typeof getCanvas()['terrain'].costGrid[x][y] == 'undefined') return false
+  return getCanvas()['terrain'].costGrid[x][y];
 }
 
 async function getPath(originPt,destPt,range,token){

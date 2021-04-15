@@ -1,5 +1,5 @@
 
-import { getCanvas } from "../settings"
+import { getCanvas, MODULE_NAME } from "../settings"
 //@ts-ignore
 import { PathManager } from "/modules/lib-find-the-path/scripts/pathManager.js";
 //@ts-ignore
@@ -30,7 +30,7 @@ export default class MovementGrid {
 		this.borderColor = game.user.color;
 		this.fillColor = game.user.color;
 		this.token = token;
-		this.name = `EnhancedMovement.${token._id}`;
+		this.name = `${MODULE_NAME}.${token._id}`;
     //@ts-ignore
 		this.pf = game.FindThePath.Chebyshev.PointFactory;
 		this.PM = new PathManager (MinkowskiParameter.Chebyshev);
@@ -43,7 +43,7 @@ export default class MovementGrid {
 		console.log('highlightGrid')
 		this.clear();
 	  const center = this.token.center;
-		let speed = this.token.remainingSpeed;
+		let speed = this.token['remainingSpeed'];
 		const spaces = speed / getCanvas().dimensions.distance;
 		const gridPos = getCanvas().grid.grid.getGridPositionFromPixels(center.x,center.y) // [row,col]
 

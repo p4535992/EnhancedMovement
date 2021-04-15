@@ -18,7 +18,7 @@ import { registerSettings } from './module/settings';
 import { preloadTemplates } from './module/preloadTemplates';
 import { MODULE_NAME } from './module/settings';
 import { initHooks, readyHooks } from './module/Hooks';
-import SpeedHUD from './module/classes/SpeedHUD.js';
+import { SpeedHUD } from './module/classes/SpeedHUD.js';
 import EnhancedMovement from './module/classes/EnhancedMovement.js';
 //import MovementGrid from './classes/MovementGrid.js';
 //@ts-ignore

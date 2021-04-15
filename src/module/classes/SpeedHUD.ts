@@ -1,3 +1,5 @@
+import { getCanvas, MODULE_NAME } from "../settings";
+
 const speedUI = {
 	walk:{
 		name:'walk',
@@ -24,7 +26,16 @@ const speedUI = {
 		icon:"shovel"
 	}
 }
-export default class SpeedHUD extends Application {
+export class SpeedHUD extends Application {
+
+  object;
+  mode;
+  token;
+  em;
+  listeners;
+  data;
+  movementTypes = [];
+
 	constructor(options={}){
 		super(options);
 		this.object = {};
@@ -52,60 +63,76 @@ export default class SpeedHUD extends Application {
 	get modes(){
 		return this.movementTypes;
 	}
+
 	listModes(mode,otherModes){
 		let list = [];
 		for (let key in otherModes){
-			if(key != this.mode) list.push(key);
+			if(key != this.mode){
+        list.push(key);
+      }
 		}
 		return list;
 	}
 
 	/* I'm not dealing with multiple tokens. I'm only worried about singular tokens */
 	get controlled(){
-		return canvas.tokens.controlled[0] || false;
+		return getCanvas().tokens.controlled[0] || false;
 	}
+
 	/*
-    * Assign the default options which are supported by the entity edit sheet
-    * @type {Object}
-    */
-    static get defaultOptions() {
-    	return mergeObject(super.defaultOptions, {
-	      id: "speedHUD",
-	      classes: ["app"],
-	      popOut: false,
-	      template: "modules/EnhancedMovement/templates/speedHUD.html"
-		});
+  * Assign the default options which are supported by the entity edit sheet
+  * @type {Object}
+  */
+  static get defaultOptions() {
+    //@ts-ignore
+    return mergeObject(super.defaultOptions, {
+        id: "speedHUD",
+        classes: ["app"],
+        popOut: false,
+        template: "modules/EnhancedMovement/templates/speedHUD.html"
+    });
+  }
+
+  getData(options={}) {
+    return {
+      active:(this.token) ? true:false,
+      data:this.data,
+      options: this.options,
+      ui:speedUI
     }
-    getData(options={}) {
-    	
-	    return {
-	      active:(this.token) ? true:false,
-	      data:this.data,
-	      options: this.options,
-	      ui:speedUI
-	    }
-  	}
-	
+  }
+
+  //@ts-ignore
 	setPosition(options) {
-	   	this.element.css({bottom:window.innerHeight - $('#players').offset().top+15})
+	   	this.element.css(
+        {
+           bottom:window.innerHeight - $('#players').offset().top+15
+        }
+      )
  	}
  	_injectHTML(html, options) {
 	    $('body').append(html);
 	    this._element = html;
-	   
+
 	}
 	activateListeners(html) {
-		
+
 	 	const moveSpeed = this.element.find('#moveSpeed');
 	 	const mode = this.element.find('#mode');
-	 	
+
 	 	moveSpeed.off();
 	 	$('body').off('click','#speedHUD li');
-	 	
-	 	
+
+
 	 	moveSpeed.keypress(function(e) {
-	 		if(e.which == 13){ this.blur(); e.preventDefault(); return false;}
-		    if (isNaN(String.fromCharCode(e.which))) e.preventDefault();
+	 		if(e.which == 13){
+        this.blur();
+        e.preventDefault();
+        return false;
+      }
+      if (isNaN(parseInt(String.fromCharCode(e.which)))){
+        e.preventDefault();
+      }
 		});
 		moveSpeed.on('focus',(e)=>{
 			console.log('focus')
@@ -129,9 +156,10 @@ export default class SpeedHUD extends Application {
 	updateMovement(speed){
 		this.em.remainingSpeed = parseFloat(speed.toFixed(2));
 		this.token.refresh();
-		this.token.setFlag('EnhancedMovement','remainingSpeed',parseFloat(speed.toFixed(2)))
+		this.token.setFlag(MODULE_NAME,'remainingSpeed',parseFloat(speed.toFixed(2)))
 		Hooks.call('updateSpeedHUD',this);
 	}
+
 	/*
 	type: (string) 'fly' or 'swim'
 	speed: (Number) 30 or 7.5
@@ -140,25 +168,27 @@ export default class SpeedHUD extends Application {
 		this.em.addMovementType(type,speed);
 		this.updateHUD()
 	}
+
 	updateTracker(rerender = false){
 		if(game.combat != null && game.combat.round > 0 && game.combat.combatants.length > 0){
 			if(this.token.id == game.combat.combatant.tokenId)
 				this.data.on = 'on';
 			else
 				this.data.on = 'off';
-			
+
 		}else{
 			this.data.on = '';
 		}
-		
+
 		if(rerender) this.render();
 	}
+
 	updateMode(mode,rerender = false){
 
 		this.em.switchType(mode)
-	 	
+
 	 	this.updateHUD()
-	 	
+
 
 	 	switch(mode){
 	 		case 'dash':
@@ -168,6 +198,7 @@ export default class SpeedHUD extends Application {
 	 		break;
 	 	}
 	}
+
 	updateHUD(render=true,updates={}){
 
 		if(this.token == false){
@@ -182,15 +213,15 @@ export default class SpeedHUD extends Application {
 			//console.log(this.movementTypes)
 			this.data.name = (this.token) ? this.token.data.name:"";
 			updates = mergeObject(updates,{
-				
+
 				modeIcon:speedUI[this.mode].icon,
-				speedUnit: canvas.scene.data.gridUnits,
+				speedUnit: getCanvas().scene.data.gridUnits,
 				remainingSpeed:Math.max(this.em.remainingSpeed,0),
 				modeList:this.listModes(this.mode,this.movementTypes)
 			});
 			this.data = mergeObject(this.data,updates);
 		}
-		
+
 		if(render) this.render(true);
 		// this.element.addClass('active');
 		// this.element.find('#token-name').html(this.data.name);
@@ -198,6 +229,7 @@ export default class SpeedHUD extends Application {
 		// this.element.find('#turn-tracker').attr('class',`turn-indicator ${this.data.on}`)
 		// this.element.find('#moveSpeed').html(this.data.remainingSpeed);
 	}
+
 	get modeIcon(){
 		return this.movementTypes[this.mode].modeIcon;
 	}
@@ -207,7 +239,12 @@ export default class SpeedHUD extends Application {
 	}*/
 
 }
-Hooks.on('renderPlayerList',()=>{
-	if(typeof canvas.hud.speedHUD != 'undefined')
-	canvas.hud.speedHUD.element.css({bottom:window.innerHeight - $('#players').offset().top+15})
-})
+// Hooks.on('renderPlayerList',()=>{
+// 	if(typeof getCanvas().hud['speedHUD'] != 'undefined'){
+//     getCanvas().hud['speedHUD'].element.css(
+//       {
+//         bottom:window.innerHeight - $('#players').offset().top+15
+//       }
+//     )
+//   }
+// })

@@ -1,17 +1,34 @@
+import { getCanvas, MODULE_NAME } from "../settings";
 
 export default class EnhancedMovement {
+
+
+  token:Token;
+  actor:Actor;
+  totalSpeed:number;
+  isDashing:boolean;
+  movementMode:string;
+  nDiagonals:number;
+  ignoreDifficultTerrain:boolean;
+  remainingSpeed:number;
+
+  initialX:number;
+  initialY:number;
+
+  movementTypes:any;
+
 	constructor(token){
 
 		this.token = token;
 		this.actor = this.token.actor;
-		this.totalSpeed = this.token.getFlag('EnhancedMovement','totalSpeed') ?? 0;
-		this.isDashing =  this.token.getFlag('EnhancedMovement','isDashing') ?? false;
-		this.movementMode = (typeof this.token.getFlag('EnhancedMovement','movementMode') != 'undefined') ? this.token.getFlag('EnhancedMovement','movementMode'):'walk';
-		this.nDiagonals = this.token.getFlag('EnhancedMovement','nDiagonal') ?? 0;
-		this.ignoreDifficultTerrain = this.token.getFlag('EnhancedMovement','ignoreDifficultTerrain') ?? false;
+		this.totalSpeed = <number>this.token.getFlag(MODULE_NAME,'totalSpeed') ?? 0;
+		this.isDashing =  <boolean>this.token.getFlag(MODULE_NAME,'isDashing') ?? false;
+		this.movementMode = (typeof this.token.getFlag(MODULE_NAME,'movementMode') != 'undefined') ? <string>this.token.getFlag(MODULE_NAME,'movementMode'):'walk';
+		this.nDiagonals = <number>this.token.getFlag(MODULE_NAME,'nDiagonal') ?? 0;
+		this.ignoreDifficultTerrain = <boolean>this.token.getFlag(MODULE_NAME,'ignoreDifficultTerrain') ?? false;
 		this.getMovementTypes();
-		this.remainingSpeed =  this.token.getFlag('EnhancedMovement','remainingSpeed') ?? this.maxSpeed;//(this.maxSpeed * ((this.isDashing) ? 2:1)) - this.totalSpeed;
-		this.token.setFlag('EnhancedMovement','isUndoing',false);
+		this.remainingSpeed =  this.token.getFlag(MODULE_NAME,'remainingSpeed') ?? this.maxSpeed;//(this.maxSpeed * ((this.isDashing) ? 2:1)) - this.totalSpeed;
+		this.token.setFlag(MODULE_NAME,'isUndoing',false);
 
 		this.initialX = token.x;
 		this.initialY = token.y;
@@ -32,10 +49,10 @@ export default class EnhancedMovement {
 		}
 	}
 	async updateMovementSpeedFlag(){
-		await this.token.unsetFlag('EnhancedMovement','remainingSpeed').then(()=>{
-			this.token.setFlag('EnhancedMovement','remainingSpeed', this.remainingSpeed);
+		await this.token.unsetFlag(MODULE_NAME,'remainingSpeed').then(()=>{
+			this.token.setFlag(MODULE_NAME,'remainingSpeed', this.remainingSpeed);
 		});
-		
+
 	}
 	addMovementType(type,speed){
 		type = type.toLowerCase();
@@ -43,8 +60,8 @@ export default class EnhancedMovement {
 		this.movementTypes[type.toLowerCase()]={
 			maxSpeed:speed
 		}
-		if(canvas.hud.speedHUD.token.id != this.token.id){
-			canvas.hud.speedHUD.updateHUD()
+		if(getCanvas().hud['speedHUD'].token.id != this.token.id){
+			getCanvas().hud['speedHUD'].updateHUD()
 		}
 		this.token.refresh();
 	}
@@ -56,7 +73,7 @@ export default class EnhancedMovement {
 	}
 	toggleIgnoreTerrain(){
 		this.ignoreDifficultTerrain = !this.ignoreDifficultTerrain;
-		this.token.setFlag('EnhancedMovement','ignoreDifficultTerrain',this.ignoreDifficultTerrain)
+		this.token.setFlag(MODULE_NAME,'ignoreDifficultTerrain',this.ignoreDifficultTerrain)
 	}
 	switchType(type){
 		this.movementMode = type.toLowerCase();
@@ -71,21 +88,21 @@ export default class EnhancedMovement {
 		}else
 			this.remainingSpeed = (this.maxSpeed * ((this.isDashing) ? 2:1)) - this.totalSpeed;
 
-	
+
 		this.token.refresh()
-		this.token.setFlag('EnhancedMovement','movementMode',this.movementMode)
-		this.token.setFlag('EnhancedMovement','remainingSpeed',this.remainingSpeed)
+		this.token.setFlag(MODULE_NAME,'movementMode',this.movementMode)
+		this.token.setFlag(MODULE_NAME,'remainingSpeed',this.remainingSpeed)
 	}
 	reset(){
 		this.totalSpeed = 0;
 		this.remainingSpeed = this.maxSpeed;
 		this.isDashing = false;
-		this.token.setFlag('EnhancedMovement','remainingSpeed',this.maxSpeed);
-		this.token.setFlag('EnhancedMovement','totalSpeed',0)
-		this.token.setFlag('EnhancedMovement','nDiagonal',0)
-		this.token.setFlag('EnhancedMovement','isDashing', false)
-		if(canvas.hud.speedHUD.token != false){
-			canvas.hud.speedHUD.updateHUD()
+		this.token.setFlag(MODULE_NAME,'remainingSpeed',this.maxSpeed);
+		this.token.setFlag(MODULE_NAME,'totalSpeed',0)
+		this.token.setFlag(MODULE_NAME,'nDiagonal',0)
+		this.token.setFlag(MODULE_NAME,'isDashing', false)
+		if(getCanvas().hud['speedHUD'].token != false){
+			getCanvas().hud['speedHUD'].updateHUD()
 		}
 		this.token.refresh();
 	}
@@ -94,35 +111,35 @@ export default class EnhancedMovement {
 		this.remainingSpeed = 0;
 		this.isDashing = false;
 		this.token.refresh();
-		this.token.setFlag('EnhancedMovement','remainingSpeed',0)
-		this.token.setFlag('EnhancedMovement','totalSpeed',0)
-		this.token.setFlag('EnhancedMovement','isDashing', false)
+		this.token.setFlag(MODULE_NAME,'remainingSpeed',0)
+		this.token.setFlag(MODULE_NAME,'totalSpeed',0)
+		this.token.setFlag(MODULE_NAME,'isDashing', false)
 		this.initialX = this.token.x;
 		this.initialY = this.token.y;
 	}
 	dash(){
 		this.isDashing = true;
-		this.token.setFlag('EnhancedMovement','isDashing', true)
+		this.token.setFlag(MODULE_NAME,'isDashing', true)
 		this.remainingSpeed = this.remainingSpeed + this.maxSpeed;
-		this.token.setFlag('EnhancedMovement','remainingSpeed',this.remainingSpeed);
-		if(canvas.hud.speedHUD.token){
-			canvas.hud.speedHUD.updateHUD()
+		this.token.setFlag(MODULE_NAME,'remainingSpeed',this.remainingSpeed);
+		if(getCanvas().hud['speedHUD'].token){
+			getCanvas().hud['speedHUD'].updateHUD()
 		}
 
 	}
 	unDash(){
 		this.isDashing = false;
-		this.token.setFlag('EnhancedMovement','isDashing', false)
+		this.token.setFlag(MODULE_NAME,'isDashing', false)
 		this.remainingSpeed = this.remainingSpeed - this.maxSpeed;
-		this.token.setFlag('EnhancedMovement','remainingSpeed',this.remainingSpeed);
-		if(canvas.hud.speedHUD.token){
-			canvas.hud.speedHUD.updateHUD()
+		this.token.setFlag(MODULE_NAME,'remainingSpeed',this.remainingSpeed);
+		if(getCanvas().hud['speedHUD'].token){
+			getCanvas().hud['speedHUD'].updateHUD()
 		}
 	}
 	undo(){
-		this.token.setFlag('EnhancedMovement','isUndoing',true).then(() => {
+		this.token.setFlag(MODULE_NAME,'isUndoing',true).then(() => {
 			this.token.update({x: this.initialX, y: this.initialY});
-			this.token.setFlag('EnhancedMovement','isUndoing',false).then(() => {
+			this.token.setFlag(MODULE_NAME,'isUndoing',false).then(() => {
 				this.reset();
 			});
 		});
