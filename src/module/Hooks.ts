@@ -7,15 +7,12 @@ import { getCanvas, MODULE_NAME } from "./settings";
 import { PathManager } from "/modules/lib-find-the-path/scripts/pathManager.js";
 //@ts-ignore
 import { MinkowskiParameter,PointFactory } from "/modules/lib-find-the-path/scripts/point.js";
-//@ts-ignore
-import * as libWrapper  from "/modules/lib-wrapper/lib-wrapper.js";
 
 let speed;
 let combat;
 let cToken;
 let stopMovement = false;
 let gmAltPress = false;
-
 
 let pathManager = new PathManager (MinkowskiParameter.Chebyshev);
 
@@ -229,13 +226,22 @@ export let readyHooks = async () => {
        path.forEach((point)=>{
            let terrainInfo = checkForTerrain(point[0],point[1])
            if(terrainInfo){
-             if(terrainInfo.type == 'ground' && token[MODULE_NAME].movementMode == 'walk' && !token[MODULE_NAME].ignoreDifficultTerrain)
-               distance += (terrainInfo.multiple * getCanvas().scene.data.gridDistance) - getCanvas().scene.data.gridDistance;
+             if(terrainInfo.type == 'ground'
+              //&& token[MODULE_NAME].movementMode == 'walk' 
+              && token.getFlag(MODULE_NAME,'movementMode')  == 'walk'
+              //&& !token[MODULE_NAME].ignoreDifficultTerrain)
+              && token.getFlag(MODULE_NAME,'ignoreDifficultTerrain')
+             ){
+              distance += (terrainInfo.multiple * getCanvas().scene.data.gridDistance) - getCanvas().scene.data.gridDistance;
+             }
 
            }
        })
 
       nDiagonal += nd;
+      if(!token.data.flags[MODULE_NAME]){
+        token.data.flags[MODULE_NAME] = {};
+      }
       //@ts-ignore
       token.data.flags[MODULE_NAME].nDiagonal = nDiagonal;
       token.setFlag(MODULE_NAME,'nDiagonal',nDiagonal);
@@ -380,18 +386,23 @@ export let readyHooks = async () => {
 export let initHooks = () => {
   warn("Init Hooks processing");
 
-  //Overwrite.init();
+  Overwrite.init();
 
-  libWrapper.register(MODULE_NAME, 'HeadsUpDisplay.prototype.speedHUD', Overwrite.HeadsUpDisplayPrototypeSpeedHUDHandler, 'WRAPPER');
-  libWrapper.register(MODULE_NAME, 'Token.prototype.previousLocation', Overwrite.TokenPrototypePreviousLocationHandler, 'WRAPPER');
+  // Not exists on libWrapper
+  // libWrapper.register(MODULE_NAME, 'HeadsUpDisplay.prototype.speedHUD', Overwrite.HeadsUpDisplayPrototypeSpeedHUDHandler, 'WRAPPER');
+  // Not exists on libWrapper
+  //libWrapper.register(MODULE_NAME, 'Token.prototype.previousLocation', Overwrite.TokenPrototypePreviousLocationHandler, 'WRAPPER');
 
-
+  //@ts-ignore
   libWrapper.register(MODULE_NAME, 'PlaceableObject.prototype.clone', Overwrite.PlaceableObjectPrototypeCloneHandler, 'WRAPPER');
+  //@ts-ignore
   libWrapper.register(MODULE_NAME, 'Token.prototype.draw', Overwrite.TokenPrototypeDrawHandler, 'WRAPPER');
+  //@ts-ignore
   libWrapper.register(MODULE_NAME, 'Token.prototype.refresh', Overwrite.TokenPrototypeRefreshHandler, 'WRAPPER');
-
-  libWrapper.register(MODULE_NAME, 'Token.prototype._clearSpeedUI', Overwrite.TokenPrototypeClearSpeedUIHandler, 'WRAPPER');
-  libWrapper.register(MODULE_NAME, 'Token.prototype._drawSpeedUI', Overwrite.TokenPrototypeDrawSpeedUIHandler, 'WRAPPER');
+  // Not exists on libWrapper
+  // libWrapper.register(MODULE_NAME, 'Token.prototype._clearSpeedUI', Overwrite.TokenPrototypeClearSpeedUIHandler, 'WRAPPER');
+  // Not exists on libWrapper
+  // libWrapper.register(MODULE_NAME, 'Token.prototype._drawSpeedUI', Overwrite.TokenPrototypeDrawSpeedUIHandler, 'WRAPPER');
 
 
 }

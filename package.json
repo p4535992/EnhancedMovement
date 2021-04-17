@@ -1,7 +1,7 @@
 {
   "private": true,
-  "name": "health-monitor",
-  "version": "1.1.2",
+  "name": "EnhancedMovement",
+  "version": "0.0.4",
   "description": "",
   "scripts": {
     "package": "gulp package",

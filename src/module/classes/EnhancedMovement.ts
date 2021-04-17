@@ -67,8 +67,9 @@ export default class EnhancedMovement {
 	}
 	removeMovementType(type){
 		type = type.toLowerCase();
-		if(this.movementMode == type)
+		if(this.movementMode == type){
 			this.movementMode = 'walk';
+		}
 		delete this.movementTypes[type];
 	}
 	toggleIgnoreTerrain(){

@@ -4,7 +4,7 @@
   "description": "A module that sets out to track player's movement during combat.",
   "authors": [{"name":"Will Saunders","email":"willsaunders1014@gmail.com" }, {"name":"Michael Burrowes", "email":"burrowes.mic@husky.neu.edu"}],
   "author": "willsaunders, burrowes and p4535992",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "socket": true,
   "includes": [
@@ -43,7 +43,7 @@
 
   ],
   "styles":[
-     "css/style.css"
+     "styles/style.css"
   ],
   "esmodules": [
     "enhanced-movement.js"
