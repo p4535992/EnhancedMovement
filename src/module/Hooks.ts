@@ -265,7 +265,7 @@ export let readyHooks = async () => {
       if(gmAltPress){
         distance = 0;
       }
-      let speed = token[MODULE_NAME].remainingSpeed || token.getFlag(MODULE_NAME,'remainingSpeed') ;
+      let speed = <number>token.getFlag(MODULE_NAME,'remainingSpeed') ;
 
       let modSpeed = speed - distance;
       if(modSpeed < 0 && !gmAltPress){
@@ -276,7 +276,7 @@ export let readyHooks = async () => {
       }else{
         token[MODULE_NAME].totalSpeed += distance;
         token.setFlag(MODULE_NAME,'totalSpeed', token[MODULE_NAME].totalSpeed)
-        token[MODULE_NAME].remainingSpeed = (modSpeed < 0) ? 0:modSpeed;
+        token.setFlag(MODULE_NAME,'remainingSpeed', (modSpeed < 0) ? 0 : modSpeed );
         token[MODULE_NAME].updateMovementSpeedFlag();
 
         getCanvas().hud['speedHUD'].updateHUD()
@@ -297,7 +297,7 @@ export let readyHooks = async () => {
     if(updates.hasOwnProperty('flags')){
       if(updates.flags.hasOwnProperty(MODULE_NAME)){
         if(updates.flags[MODULE_NAME].hasOwnProperty('remainingSpeed')){
-          token[MODULE_NAME].remainingSpeed = updates.flags[MODULE_NAME].remainingSpeed;
+          token.setFlag(MODULE_NAME,'remainingSpeed', updates.flags[MODULE_NAME].remainingSpeed);
           //token[MODULE_NAME].updateMovementSpeedFlag();
           token.refresh();
 
@@ -351,9 +351,9 @@ export let readyHooks = async () => {
       let tokens = getTokensFromActor(actor);
       if(tokens.length > 0){
         tokens.forEach((token)=>{
-          let diff = token[MODULE_NAME].remainingSpeed - token[MODULE_NAME].maxSpeed;
+          let diff =  <number>token.getFlag(MODULE_NAME,'remainingSpeed') - token[MODULE_NAME].maxSpeed;
 
-          token[MODULE_NAME].remainingSpeed = newSpeed - diff;
+          token.setFlag(MODULE_NAME,'remainingSpeed', newSpeed - diff);
           getCanvas().hud['speedHUD'].updateHUD()
           token.unsetFlag(MODULE_NAME,'remainingSpeed').then(()=>{
             token.setFlag(MODULE_NAME,'remainingSpeed', newSpeed-diff);

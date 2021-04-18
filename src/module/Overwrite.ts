@@ -42,7 +42,7 @@ export class Overwrite {
   }
 
   static TokenPrototypeRefreshHandler = function(wrapped, ...args) {
-		this.remainingSpeed = this[MODULE_NAME].remainingSpeed || this.getFlag(MODULE_NAME,'remainingSpeed') || 0;
+		this.remainingSpeed = this.getFlag(MODULE_NAME,'remainingSpeed') || 0;
     Overwrite.oldTokenRefresh = this;
     //oldTokenRefresh.apply(this);
     if(typeof this.speedUI == 'undefined'){
@@ -227,7 +227,7 @@ export class Overwrite {
         this.speedUI.removeChildren()
       }catch(e){}
 			 // Gate font size based on grid size
-      const remainingSpeed = this[MODULE_NAME].remainingSpeed || this.getFlag(MODULE_NAME,'remainingSpeed') || 0
+      const remainingSpeed = this.getFlag(MODULE_NAME,'remainingSpeed') || 0
 			const speed = Math.max(remainingSpeed,0);
 		    const gs = getCanvas().dimensions.size;
 		    let h = 24;
