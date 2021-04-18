@@ -265,7 +265,7 @@ export let readyHooks = async () => {
       if(gmAltPress){
         distance = 0;
       }
-      let speed = token[MODULE_NAME].remainingSpeed;
+      let speed = token[MODULE_NAME].remainingSpeed || token.getFlag(MODULE_NAME,'remainingSpeed') ;
 
       let modSpeed = speed - distance;
       if(modSpeed < 0 && !gmAltPress){
@@ -382,7 +382,8 @@ export let readyHooks = async () => {
 
   Hooks.on('renderTokenHUD',(tokenHUD,element,data)=>{
     let token = getCanvas().tokens.get(data._id)
-    let isDashing = (token[MODULE_NAME].isDashing) ? 'active':''
+    //let isDashing = (token[MODULE_NAME].isDashing) ? 'active':''
+    let isDashing = <boolean>token.getFlag(MODULE_NAME,'isDashing')  ? 'active':'';
     element.find('.elevation').append(`<div id="dash-btn" class="control-icon fas fa-running ${isDashing}"></div>`)
     element.find('.elevation').append(`<div id="undo-btn" class="control-icon fas fa-undo"></div>`)
   });

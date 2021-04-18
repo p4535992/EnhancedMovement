@@ -42,14 +42,15 @@ export class Overwrite {
   }
 
   static TokenPrototypeRefreshHandler = function(wrapped, ...args) {
-		this.remainingSpeed =  this.getFlag(MODULE_NAME,'remainingSpeed') || 0; // this[MODULE_NAME].remainingSpeed ||
+		this.remainingSpeed = this[MODULE_NAME].remainingSpeed || this.getFlag(MODULE_NAME,'remainingSpeed') || 0;
     Overwrite.oldTokenRefresh = this;
     //oldTokenRefresh.apply(this);
     if(typeof this.speedUI == 'undefined'){
       this.speedUI = this.addChild(new PIXI.Container());
     }
     this.speedUI.visible = false;
-    if(typeof this[MODULE_NAME] != 'undefined' && this.owner == true){
+    //if(typeof this[MODULE_NAME] != 'undefined' && this.owner == true){
+    if(typeof this != 'undefined' && this.owner == true){
       this._drawSpeedUI();
     }
     return wrapped(...args);
@@ -203,7 +204,7 @@ export class Overwrite {
 
 		// Token.prototype.refresh = function(){
 		// 	console.log()
-		// //	this.remainingSpeed = this[MODULE_NAME].remainingSpeed; //this.getFlag(MODULE_NAME,'remainingSpeed') || 0;
+		// //	this.remainingSpeed = this.getFlag(MODULE_NAME,'remainingSpeed') || 0;
 		// 	oldTokenRefresh.apply(this);
 		// 	if(typeof this.speedUI == 'undefined')
 		// 		this.speedUI = this.addChild(new PIXI.Container());
@@ -226,8 +227,8 @@ export class Overwrite {
         this.speedUI.removeChildren()
       }catch(e){}
 			 // Gate font size based on grid size
-
-			const speed = Math.max(this[MODULE_NAME].remainingSpeed,0);
+      const remainingSpeed = this[MODULE_NAME].remainingSpeed || this.getFlag(MODULE_NAME,'remainingSpeed') || 0
+			const speed = Math.max(remainingSpeed,0);
 		    const gs = getCanvas().dimensions.size;
 		    let h = 24;
 		    if ( gs >= 200 ){
@@ -315,11 +316,11 @@ export class Overwrite {
 		   // this.speedUI.addChild(sprite);
 		    this.speedUI.addChild(name)
 			if(game.combat != null){
-				if(game.combat.round > 0)
+				if(game.combat.round > 0) {
 					this.speedUI.visible = true;
-				else
+        } else {
 					this.speedUI.visible = false;
-
+        }
 			}else{
 				this.speedUI.visible = false;
 			}
