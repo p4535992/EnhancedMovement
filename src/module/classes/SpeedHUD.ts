@@ -34,7 +34,7 @@ export class SpeedHUD extends Application {
   em;
   listeners;
   data;
-  movementTypes = [];
+  movementTypes = {};
 
 	constructor(options={}){
 		super(options);
@@ -68,8 +68,8 @@ export class SpeedHUD extends Application {
 		let list = [];
 		for (let key in otherModes){
 			if(key != this.mode){
-        list.push(key);
-      }
+				list.push(key);
+			}
 		}
 		return list;
 	}
@@ -80,29 +80,29 @@ export class SpeedHUD extends Application {
 	}
 
 	/*
-  * Assign the default options which are supported by the entity edit sheet
-  * @type {Object}
-  */
-  static get defaultOptions() {
-    //@ts-ignore
-    return mergeObject(super.defaultOptions, {
-        id: "speedHUD",
-        classes: ["app"],
-        popOut: false,
-        template: "modules/EnhancedMovement/templates/speedHUD.html"
-    });
-  }
+	* Assign the default options which are supported by the entity edit sheet
+	* @type {Object}
+	*/
+	static get defaultOptions() {
+		//@ts-ignore
+		return mergeObject(super.defaultOptions, {
+			id: "speedHUD",
+			classes: ["app"],
+			popOut: false,
+			template: "modules/"+MODULE_NAME+"/templates/speedHUD.html"
+		});
+	}
 
-  getData(options={}) {
-    return {
-      active:(this.token) ? true:false,
-      data:this.data,
-      options: this.options,
-      ui:speedUI
-    }
-  }
+	getData(options={}) {
+		return {
+		active:(this.token) ? true:false,
+		data:this.data,
+		options: this.options,
+		ui:speedUI
+		}
+	}
 
-  //@ts-ignore
+  	//@ts-ignore
 	setPosition(options) {
 	   	this.element.css(
         {
@@ -126,13 +126,13 @@ export class SpeedHUD extends Application {
 
 	 	moveSpeed.keypress(function(e) {
 	 		if(e.which == 13){
-        this.blur();
-        e.preventDefault();
-        return false;
-      }
-      if (isNaN(parseInt(String.fromCharCode(e.which)))){
-        e.preventDefault();
-      }
+				this.blur();
+				e.preventDefault();
+				return false;
+			}
+			if (isNaN(parseInt(String.fromCharCode(e.which)))){
+				e.preventDefault();
+			}
 		});
 		moveSpeed.on('focus',(e)=>{
 			console.log('focus')
@@ -171,16 +171,18 @@ export class SpeedHUD extends Application {
 
 	updateTracker(rerender = false){
 		if(game.combat != null && game.combat.round > 0 && game.combat.combatants.length > 0){
-			if(this.token.id == game.combat.combatant.tokenId)
+			if(this.token.id == game.combat.combatant.tokenId){
 				this.data.on = 'on';
-			else
+			} else {
 				this.data.on = 'off';
-
-		}else{
+			}
+		} else {
 			this.data.on = '';
 		}
 
-		if(rerender) this.render();
+		if(rerender){
+			this.render();
+		}
 	}
 
 	updateMode(mode,rerender = false){
@@ -204,10 +206,13 @@ export class SpeedHUD extends Application {
 		if(this.token == false){
 			this.data = mergeObject(this.data,updates);
 		}else{
-			this.em = this.token.EnhancedMovement;
+			this.em = this.token[MODULE_NAME];
+			if(!this.em){
+				this.em = this.token;
+			}
 			this.movementTypes = this.em.movementTypes;
 
-			this.mode = this.em.movementMode;
+			this.mode = this.em.movementMode || this.em.getFlag(MODULE_NAME,'movementMode') || 'walk';
 			this.data.modes = this.modes;
 			this.updateTracker()
 			//console.log(this.movementTypes)
@@ -222,7 +227,9 @@ export class SpeedHUD extends Application {
 			this.data = mergeObject(this.data,updates);
 		}
 
-		if(render) this.render(true);
+		if(render){
+			this.render(true);
+		}
 		// this.element.addClass('active');
 		// this.element.find('#token-name').html(this.data.name);
 		// this.element.find('#mode').attr('class',`movement-mode ${this.data.modeIcon}`)

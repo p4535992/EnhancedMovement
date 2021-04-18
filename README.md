@@ -70,5 +70,3 @@ Mad props to the 'League of Extraordinary FoundryVTT Developers' community which
 ## Credit
 
 Thanks to anyone who helps me with this code! I appreciate the user community's feedback on this project!
-
-- [showdooricons](https://github.com/wsaunders1014/EnhancedMovement) ty to [wsaunders1014](https://github.com/wsaunders1014)

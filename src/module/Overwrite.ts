@@ -1,6 +1,6 @@
 import { error } from './../enhanced-movement';
 import { SpeedHUD } from './classes/SpeedHUD';
-import { getCanvas } from './settings';
+import { getCanvas, MODULE_NAME } from './settings';
 
 export class Overwrite {
 
@@ -23,7 +23,7 @@ export class Overwrite {
   static PlaceableObjectPrototypeCloneHandler = function(wrapped, ...args) {
     Overwrite.oldPOClone = this;
     //let clone = oldPOClone.apply(this);
-    ////clone.remainingSpeed = this.EnhancedMovement.remainingSpeed;
+    ////clone.remainingSpeed = this[MODULE_NAME].remainingSpeed;
     //return clone;
     return wrapped(...args);
   }
@@ -35,21 +35,21 @@ export class Overwrite {
       this.speedUI = this.addChild(new PIXI.Container());
     }
     this.speedUI.visible = false;
-    if(typeof this.EnhancedMovement != 'undefined' && this.owner == true){
+    if(typeof this[MODULE_NAME] != 'undefined' && this.owner == true){
       this._drawSpeedUI();
     }
     return wrapped(...args);
   }
 
   static TokenPrototypeRefreshHandler = function(wrapped, ...args) {
-		//	this.remainingSpeed = this.EnhancedMovement.remainingSpeed; //this.getFlag(MODULE_NAME,'remainingSpeed') || 0;
+		this.remainingSpeed =  this.getFlag(MODULE_NAME,'remainingSpeed') || 0; // this[MODULE_NAME].remainingSpeed ||
     Overwrite.oldTokenRefresh = this;
     //oldTokenRefresh.apply(this);
     if(typeof this.speedUI == 'undefined'){
       this.speedUI = this.addChild(new PIXI.Container());
     }
     this.speedUI.visible = false;
-    if(typeof this.EnhancedMovement != 'undefined' && this.owner == true){
+    if(typeof this[MODULE_NAME] != 'undefined' && this.owner == true){
       this._drawSpeedUI();
     }
     return wrapped(...args);
@@ -70,7 +70,7 @@ export class Overwrite {
     try{this.speedUI.removeChildren()}catch(e){}
      // Gate font size based on grid size
 
-    const speed = Math.max(this.EnhancedMovement.remainingSpeed,0);
+    const speed = Math.max(this[MODULE_NAME].remainingSpeed,0);
       const gs = getCanvas().dimensions.size;
       let h = 24;
       if ( gs >= 200 ) h = 36;
@@ -122,7 +122,7 @@ export class Overwrite {
       name.position.set(this.w-2, 12);
 
 
-     // let sprite = PIXI.Sprite.from('./modules/EnhancedMovement/assets/walking-solid.svg');
+     // let sprite = PIXI.Sprite.from('./modules/'+MODULE_NAME+'/assets/walking-solid.svg');
       // Anchor to the top-center of the nameplate
       //sprite.anchor.set(1, 0);
 
@@ -196,19 +196,19 @@ export class Overwrite {
 		// 	if(typeof this.speedUI == 'undefined')
 		// 		this.speedUI = this.addChild(new PIXI.Container());
 		// 	this.speedUI.visible = false;
-		// 	if(typeof this.EnhancedMovement != 'undefined' && this.owner == true)
+		// 	if(typeof this[MODULE_NAME] != 'undefined' && this.owner == true)
 		// 		this._drawSpeedUI();
 		// 	return this;
 		// }
 
 		// Token.prototype.refresh = function(){
 		// 	console.log()
-		// //	this.remainingSpeed = this.EnhancedMovement.remainingSpeed; //this.getFlag(MODULE_NAME,'remainingSpeed') || 0;
+		// //	this.remainingSpeed = this[MODULE_NAME].remainingSpeed; //this.getFlag(MODULE_NAME,'remainingSpeed') || 0;
 		// 	oldTokenRefresh.apply(this);
 		// 	if(typeof this.speedUI == 'undefined')
 		// 		this.speedUI = this.addChild(new PIXI.Container());
 		// 	this.speedUI.visible = false;
-		// 	if(typeof this.EnhancedMovement != 'undefined' && this.owner == true)
+		// 	if(typeof this[MODULE_NAME] != 'undefined' && this.owner == true)
 		// 		this._drawSpeedUI();
 		// }
 
@@ -227,7 +227,7 @@ export class Overwrite {
       }catch(e){}
 			 // Gate font size based on grid size
 
-			const speed = Math.max(this.EnhancedMovement.remainingSpeed,0);
+			const speed = Math.max(this[MODULE_NAME].remainingSpeed,0);
 		    const gs = getCanvas().dimensions.size;
 		    let h = 24;
 		    if ( gs >= 200 ){
@@ -281,7 +281,7 @@ export class Overwrite {
 		    name.position.set(this.w-2, 12);
 
 
-		   // let sprite = PIXI.Sprite.from('./modules/EnhancedMovement/assets/walking-solid.svg');
+		   // let sprite = PIXI.Sprite.from('./modules/'+MODULE_NAME+'/assets/walking-solid.svg');
 		    // Anchor to the top-center of the nameplate
 		    //sprite.anchor.set(1, 0);
 
@@ -328,7 +328,7 @@ export class Overwrite {
 
 		// PlaceableObject.prototype.clone = function(){
 		// 	let clone = Overwrite.oldPOClone.apply(this);
-		// 	//clone.remainingSpeed = this.EnhancedMovement.remainingSpeed;
+		// 	//clone.remainingSpeed = this[MODULE_NAME].remainingSpeed;
 		// 	return clone;
 		// }
 	}

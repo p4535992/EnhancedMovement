@@ -18,13 +18,13 @@ import { registerSettings } from './module/settings';
 import { preloadTemplates } from './module/preloadTemplates';
 import { MODULE_NAME } from './module/settings';
 import { initHooks, readyHooks } from './module/Hooks';
-import { SpeedHUD } from './module/classes/SpeedHUD.js';
-import EnhancedMovement from './module/classes/EnhancedMovement.js';
+// import { SpeedHUD } from './module/classes/SpeedHUD.js';
+// import EnhancedMovement from './module/classes/EnhancedMovement.js';
 //import MovementGrid from './classes/MovementGrid.js';
 //@ts-ignore
-import { PathManager } from "/modules/lib-find-the-path/scripts/pathManager.js";
+// import { PathManager } from "/modules/lib-find-the-path/scripts/pathManager.js";
 //@ts-ignore
-import { MinkowskiParameter,PointFactory } from "/modules/lib-find-the-path/scripts/point.js";
+// import { MinkowskiParameter,PointFactory } from "/modules/lib-find-the-path/scripts/point.js";
 
 export let debugEnabled = 0;
 // 0 = none, warnings = 1, debug = 2, all = 3

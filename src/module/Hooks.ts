@@ -22,7 +22,7 @@ let interval = null;
 export let readyHooks = async () => {
 
   Hooks.on('canvasReady',()=>{
-    //getCanvas().grid.addHighlightLayer(`EnhancedMovement.${game.userId}`);
+    //getCanvas().grid.addHighlightLayer(`${MODULE_NAME}.${game.userId}`);
     //getCanvas().hud.speedHUD = new SpeedHUD();
     getCanvas().tokens.placeables.forEach((token)=>{
       if(typeof token.actor != 'undefined'){
@@ -230,7 +230,7 @@ export let readyHooks = async () => {
               //&& token[MODULE_NAME].movementMode == 'walk' 
               && token.getFlag(MODULE_NAME,'movementMode')  == 'walk'
               //&& !token[MODULE_NAME].ignoreDifficultTerrain)
-              && token.getFlag(MODULE_NAME,'ignoreDifficultTerrain')
+              && !token.getFlag(MODULE_NAME,'ignoreDifficultTerrain')
              ){
               distance += (terrainInfo.multiple * getCanvas().scene.data.gridDistance) - getCanvas().scene.data.gridDistance;
              }
@@ -259,9 +259,12 @@ export let readyHooks = async () => {
           distance += spaces * getCanvas().dimensions.distance;
       }
       //Hex Distances are only 3.75 for some reason, we need to clamp this so it's always at least 5.
-      if(distance < getCanvas().scene.data.gridDistance) distance = getCanvas().scene.data.gridDistance;
-      if(gmAltPress) distance = 0;
-
+      if(distance < getCanvas().scene.data.gridDistance){
+        distance = getCanvas().scene.data.gridDistance;
+      }
+      if(gmAltPress){
+        distance = 0;
+      }
       let speed = token[MODULE_NAME].remainingSpeed;
 
       let modSpeed = speed - distance;
@@ -280,6 +283,7 @@ export let readyHooks = async () => {
       }
 
       if( game.combat.started && game.combat.combatant.tokenId == tokenData._id){
+        // DO NOTHING
       }else if(!gmAltPress && game.combat.started  && game.combat.combatants.findIndex((i)=>{return i.tokenId == token.id}) !== -1){
         ui.notifications.warn("It is not your move.", {permanent: false});
         //return false;
@@ -368,9 +372,10 @@ export let readyHooks = async () => {
       if(tokens.length > 0){
         tokens.forEach((token)=>{
           token[MODULE_NAME].getMovementTypes();
-          if(getCanvas().hud['speedHUD'].token.id == token.id)
-            getCanvas().hud['speedHUD'].updateHUD()
-        })
+          if(getCanvas().hud['speedHUD'].token.id == token.id){
+            getCanvas().hud['speedHUD'].updateHUD();
+          }
+        });
       }
     }
   });
@@ -381,12 +386,6 @@ export let readyHooks = async () => {
     element.find('.elevation').append(`<div id="dash-btn" class="control-icon fas fa-running ${isDashing}"></div>`)
     element.find('.elevation').append(`<div id="undo-btn" class="control-icon fas fa-undo"></div>`)
   });
-}
-
-export let initHooks = () => {
-  warn("Init Hooks processing");
-
-  Overwrite.init();
 
   // Not exists on libWrapper
   // libWrapper.register(MODULE_NAME, 'HeadsUpDisplay.prototype.speedHUD', Overwrite.HeadsUpDisplayPrototypeSpeedHUDHandler, 'WRAPPER');
@@ -404,6 +403,12 @@ export let initHooks = () => {
   // Not exists on libWrapper
   // libWrapper.register(MODULE_NAME, 'Token.prototype._drawSpeedUI', Overwrite.TokenPrototypeDrawSpeedUIHandler, 'WRAPPER');
 
+}
+
+export let initHooks = () => {
+  warn("Init Hooks processing");
+
+  Overwrite.init();
 
 }
 
@@ -419,8 +424,12 @@ function getTokensFromActor(actor){
 
 function checkForTerrain(x,y){
 
-  if(typeof getCanvas()['terrain'].costGrid[x] == 'undefined') return false
-  if(typeof getCanvas()['terrain'].costGrid[x][y] == 'undefined') return false
+  if(typeof getCanvas()['terrain'].costGrid[x] == 'undefined'){
+    return false
+  }
+  if(typeof getCanvas()['terrain'].costGrid[x][y] == 'undefined'){
+    return false
+  }
   return getCanvas()['terrain'].costGrid[x][y];
 }
 
@@ -470,7 +479,7 @@ function calcStraightLine (startCoordinates, endCoordinates) {
           y1 += sy;
       }
       // Set coordinates
-       coordinatesArray.push([x1, y1]);
+      coordinatesArray.push([x1, y1]);
   }
   // Return the result
   return coordinatesArray;
