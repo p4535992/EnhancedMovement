@@ -1,5 +1,7 @@
 # Enhanced Movement
 
+## THIS MODULE IS STILL IN BETA BUT I THINK IS A GOOD START POINT FOR FOUNDRY VTT 0.8.0, ANYWAY A BIG PART OF THIS FEATURES CAN BE FOUND ON [Monk Little Details](https://github.com/ironmonk88/monks-little-details)
+
 <p>This module aims to track and differentiate the different types of movement a token has during combat in DnD 5e as well as implement automatic Difficult Terrain tracking through the dependent Terrain Layer module.</p>
 When combat starts, all token's movement speeds are reset to their default max. A user can see the different movement modes a token has in the Movement tracker. For instance an Adult Blue Dragon has a walk speed of 40, burrow speed of 30, and a flying speed of 80. This module currently only supports the PHB RAW interpretation of tracking multiple movement types. 
 
